@@ -1,7 +1,8 @@
 from bluetooth import *
 import argparse
 import pickle
-
+import pika
+import rmq_params as p
 def print_menu(menu):
     for food in menu:
         print (food, end='')
@@ -17,10 +18,10 @@ def order_menu(menu):
         order[item] = menu[item]
     return order
 
-def parse:
+def parse():
     parser = argparse.ArgumentParser(description='Arguments for client.')
-    parser.add_argument('-s', dest='server_ip',  help="server ip", type = str, action="store", default="192.168.1.101")
-    parser.add_argument('-b', dest='bt_ip', help="bt ip", type = str, action="store", default="B8:27:EB:09:20:6D")
+    parser.add_argument('-s', dest='server_ip',  help="server ip", type = str, action="store", default="192.168.0.101")
+    parser.add_argument('-b', dest='bt_ip', help="bt ip", type = str, action="store", default="B8:27:EB:E1:12:00")
     args = parser.parse_args()
     return args.server_ip, args.bt_ip
 
@@ -37,6 +38,7 @@ def connect_rbmq(server_ip):
 connect_rbmq(server_addr)
 port = 1
 sock=BluetoothSocket( RFCOMM )
+print (bd_addr)
 sock.connect((bd_addr, port))
 #receive menu
 #sock.send("hello!!")
