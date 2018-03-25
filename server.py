@@ -42,8 +42,8 @@ def start_BTS():
     print("[Checkpoint] Waiting for connection on RFCOMM channel 1")
     client_sock, client_info = server_sock.accept()
     print("[Checkpoint] Accepted connection from ", client_info)
-
-start_BTS()
+    return server_sock, client_sock
+(server_sock, client_sock)=start_BTS()
 try:
     #-------send menu-------
     raw_menu = menu.menu
