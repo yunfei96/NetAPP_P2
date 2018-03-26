@@ -39,25 +39,51 @@ def start_BTS():
     print("[Checkpoint] Bluetooth ready!")
     server_sock.bind(("",port))
     server_sock.listen(1)
+    return server_sock
+
+order_ID = 0
+#-----------------main start here----------------
+while 1:
+    server_sock=start_BTS()
     print("[Checkpoint] Waiting for connection on RFCOMM channel 1")
     client_sock, client_info = server_sock.accept()
-    print("[Checkpoint] Accepted connection from ", client_info)
-    return server_sock, client_sock
-(server_sock, client_sock)=start_BTS()
-try:
-    #-------send menu-------
-    raw_menu = menu.menu
-    send_menu = pickle.dumps(raw_menu)
-    client_sock.send('hello')
-    print("[Checkpoint] Sent menu:")
-    #print_menu()
-    #-------receive order----
-    #-------proccess order----
-    #-------send back---------
-    #data = client_sock.recv(1024)
-except IOError:
-    pass
-
-print("disconnected")
-client_sock.close()
+    print("[Checkpoint] Accepted connection from " %client_info)
+    try:
+        #-------send menu-------
+        raw_menu = menu.menu
+        send_menu = pickle.dumps(raw_menu)
+        client_sock.send(raw_menu)
+        print("[Checkpoint] Sent menu:")
+        print_menu()
+        #-------receive order----
+        data = client_sock.recv(1024)
+        order_list = pickle.loads(data)
+        print("[Checkpoint] Received order:")
+        print(order_list)
+        #-------proccess order----
+        price =0
+        time =0
+        re = []
+        for item in order_list:
+            if item in menu.menu.keys():
+                price = price + menu.menu[item]['price']
+                time = time + menu.menu[item]['time']
+                re.append(item)
+        #-------send back---------
+        print("[Checkpoint] Sent receipt:")
+        print("Order ID: ", end='')
+        print(i)
+        print("Items: ", end='')
+        print(re)
+        print("Total Price: ",end='')
+        print(price)
+        print("Total Time: ",end='')
+        print(time)
+        receipt = pickle.dumps((i,re,price,time))
+        client_sock.send(receipt)
+        print("[Checkpoint] Closed Bluetooth Connection.")
+        client_sock.close()
+    except IOError:
+            pass
+    i=i+1
 server_sock.close()

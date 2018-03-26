@@ -11,12 +11,7 @@ def print_menu(menu):
         print (menu[food]['price'])
         print ('  time: ', end='')
         print (menu[food]['time'])
-def order_menu(menu):
-    list = str.split(input("Enter food seprate by space: "))
-    order = {}
-    for item in list:
-        order[item] = menu[item]
-    return order
+
 
 def parse():
     parser = argparse.ArgumentParser(description='Arguments for client.')
@@ -31,21 +26,39 @@ def connect_rbmq(server_ip):
     parameters = pika.ConnectionParameters(server_ip, 5672, p.rmq_params["vhost"], credentials)
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
-    print("[Checkpoint] Connected to vhost %s on RMQ server at %s as user %s",p.rmq_params["vhost"],'localhost',p.rmq_params["username"])
+    print("[Checkpoint] Connected to vhost %s on RMQ server at %s as user %s" %(p.rmq_params["vhost"],'localhost',p.rmq_params["username"]))
 
 #----------connect BT server-----------
 (server_addr,bd_addr) = parse()
 connect_rbmq(server_addr)
 port = 1
 sock=BluetoothSocket( RFCOMM )
-print (bd_addr)
 sock.connect((bd_addr, port))
-#receive menu
-#sock.send("hello!!")
+print ("[Checkpoint] Connected")
+#-----receive menu
 data = sock.recv(1024)
-print(data)
-#send order list
-#receive receipt
+print([Checkpoint] Received menu:)
+mymenu = pickle.loads(data)
+print_menu(mymenu)
+list = str.split(input("Enter food seprate by space: "))
+#------send order list
+print("[Checkpoint] Sent order:")
+print(list)
+order_list = pickle.dumps(list)
+sock.send(order_list)
+#-------receive receipt
+print("[Checkpoint] Received receipt:")
+data = sock.recv(1024)
+receipt = pickle.loads(data)
+print("Order ID: ",end='')
+print(receipt[0])
+print("Items: ", end='')
+print(receipt[1])
+print("Total Price: ",end='')
+print(receipt[2])
+print("Total Time: ", end='')
+print(receipt[3])
+print("[Checkpoint] Closed Bluetooth Connection.")
 #listen to status queue
 sock.close()
 
