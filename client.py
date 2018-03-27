@@ -37,7 +37,7 @@ sock.connect((bd_addr, port))
 print ("[Checkpoint] Connected")
 #-----receive menu
 data = sock.recv(1024)
-print([Checkpoint] Received menu:)
+print("[Checkpoint] Received menu:")
 mymenu = pickle.loads(data)
 print_menu(mymenu)
 list = str.split(input("Enter food seprate by space: "))
