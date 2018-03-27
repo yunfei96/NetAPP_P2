@@ -18,31 +18,41 @@ def connect_rbmq():
     parameters = pika.ConnectionParameters('localhost', 5672, p.rmq_params["vhost"], credentials)
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
-    print("[Checkpoint] Connected to vhost %s on RMQ server at %s as user %s",p.rmq_params["vhost"],'localhost',p.rmq_params["username"])
-def setup_q_e():
+    print("[Checkpoint] Connected to vhost %s on RMQ server at localhost as user %s" %(p.rmq_params["vhost"],p.rmq_params["username"]))
+    return channel
+
+def setup_q_e(channel):
     #----------declare exchange and queue---------------
     channel.exchange_declare(exchange= p.rmq_params["exchange"],
                          exchange_type='direct')
     channel.queue_declare(p.rmq_params["order_queue"], auto_delete=True)
     channel.queue_declare(p.rmq_params["led_queue"], auto_delete=True)
+    channel.queue_bind(exchange= p.rmq_params["exchange"], queue=p.rmq_params["order_queue"], routing_key="processor")
+    channel.queue_bind(exchange= p.rmq_params["exchange"], queue=p.rmq_params["led_queue"], routing_key="led")
     print("[Checkpoint] Setting up exchanges and queues...")
-    '''
-    channel.queue_declare(p.rmq_params["exchange"], auto_delete=True)
-    channel.basic_publish(exchange='order_system',
-    routing_key=severity,
-    body=message)
-    '''
+
 def start_BTS():
-    #start a bluetooth server
+    #----------start a bluetooth server-------------------
     port = 1
     server_sock=BluetoothSocket( RFCOMM )
     print("[Checkpoint] Bluetooth ready!")
     server_sock.bind(("",port))
     server_sock.listen(1)
     return server_sock
-
+def rbq_send(channel,device,message)
+    channel.basic_publish(exchange=p.rmq_params["exchange"],
+                      routing_key=device,
+                      body=message)
 order_ID = 0
 #-----------------main start here----------------
+#connect to rbq
+channel = connect_rbmq()
+#setup queue
+setup_q_e(channel)
+#-test-
+rbq_send(channel,"processor","hi")
+#-----
+#setup bt server
 server_sock=start_BTS()
 while 1:
     print("[Checkpoint] Waiting for connection on RFCOMM channel 1")
