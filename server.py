@@ -43,18 +43,19 @@ def start_BTS():
 
 order_ID = 0
 #-----------------main start here----------------
+server_sock=start_BTS()
 while 1:
-    server_sock=start_BTS()
     print("[Checkpoint] Waiting for connection on RFCOMM channel 1")
     client_sock, client_info = server_sock.accept()
-    print("[Checkpoint] Accepted connection from " %client_info)
+    print("[Checkpoint] Accepted connection from ", end='')
+    print(client_info)
     try:
         #-------send menu-------
         raw_menu = menu.menu
         send_menu = pickle.dumps(raw_menu)
-        client_sock.send(raw_menu)
+        client_sock.send(send_menu)
         print("[Checkpoint] Sent menu:")
-        print_menu()
+        print_menu(raw_menu)
         #-------receive order----
         data = client_sock.recv(1024)
         order_list = pickle.loads(data)
@@ -72,18 +73,18 @@ while 1:
         #-------send back---------
         print("[Checkpoint] Sent receipt:")
         print("Order ID: ", end='')
-        print(i)
+        print(order_ID)
         print("Items: ", end='')
         print(re)
         print("Total Price: ",end='')
         print(price)
         print("Total Time: ",end='')
         print(time)
-        receipt = pickle.dumps((i,re,price,time))
+        receipt = pickle.dumps((order_ID,re,price,time))
         client_sock.send(receipt)
         print("[Checkpoint] Closed Bluetooth Connection.")
         client_sock.close()
     except IOError:
             pass
-    i=i+1
+    order_ID = order_ID + 1
 server_sock.close()
