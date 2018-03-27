@@ -39,7 +39,7 @@ def start_BTS():
     server_sock.bind(("",port))
     server_sock.listen(1)
     return server_sock
-def rbq_send(channel,device,message)
+def rbq_send(channel,device,message):
     channel.basic_publish(exchange=p.rmq_params["exchange"],
                       routing_key=device,
                       body=message)
