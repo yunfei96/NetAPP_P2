@@ -25,7 +25,6 @@ def setup_q_e(channel):
     #----------declare exchange and queue---------------
     channel.exchange_declare(exchange= p.rmq_params["exchange"],
                          exchange_type='direct')
-    print ("setup exchange")
     channel.queue_declare(p.rmq_params["order_queue"], auto_delete=True)
     channel.queue_declare(p.rmq_params["led_queue"], auto_delete=True)
     channel.queue_bind(exchange= p.rmq_params["exchange"], queue=p.rmq_params["order_queue"], routing_key="processor")
