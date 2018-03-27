@@ -31,6 +31,11 @@ def setup_q_e(channel):
     channel.queue_bind(exchange= p.rmq_params["exchange"], queue=p.rmq_params["led_queue"], routing_key="led")
     print("[Checkpoint] Setting up exchanges and queues...")
 
+def setup_od_q(channel,order_ID):
+    #----------declare order queue---------------------
+    channel.queue_declare(order_ID.str(), auto_delete=True)
+    channel.queue_bind(exchange= p.rmq_params["exchange"], queue=order_ID.str(), routing_key="client")
+
 def start_BTS():
     #----------start a bluetooth server-------------------
     port = 1
@@ -89,6 +94,10 @@ while 1:
         print(time)
         receipt = pickle.dumps((order_ID,re,price,time))
         client_sock.send(receipt)
+        setup_od_q(channel, order_ID)
+        #send to client status queue
+        rbq_send(channel,"client",pickle.dumps(1))
+        #send to order queue
         rbq_send(channel,"processor",receipt)
         print("[Checkpoint] Closed Bluetooth Connection.")
         client_sock.close()

@@ -2,6 +2,7 @@ from bluetooth import *
 import argparse
 import pickle
 import pika
+import sys
 import rmq_params as p
 def print_menu(menu):
     for food in menu:
@@ -27,10 +28,23 @@ def connect_rbmq(server_ip):
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
     print("[Checkpoint] Connected to vhost %s on RMQ server at %s as user %s" %(p.rmq_params["vhost"],'localhost',p.rmq_params["username"]))
+    return channel
+
+def callback(ch, method, properties, body):
+    input = pickle.loads(body)
+    print("[Checkpoint] Consuming from RMQ queue: %r" %method.routing_key)
+    if(input == 1):
+        print("[Checkpoint] Order Update: Your order has been submitted.")
+    elif(input == 2):
+        print("[Checkpoint] Order Update: We are processing your order.")
+    else:
+        print("[Checkpoint] Order Update: We finished processing your order.")
+        sys.exit()
+
 
 #----------connect BT server-----------
 (server_addr,bd_addr) = parse()
-connect_rbmq(server_addr)
+channel = connect_rbmq(server_addr)
 port = 1
 sock=BluetoothSocket( RFCOMM )
 sock.connect((bd_addr, port))
@@ -59,6 +73,10 @@ print(receipt[2])
 print("Total Time: ", end='')
 print(receipt[3])
 print("[Checkpoint] Closed Bluetooth Connection.")
-#listen to status queue
 sock.close()
+#listen to status queue
+channel.basic_consume(callback,
+                      queue=receipt[0].str(),
+                      no_ack=True)
 
+channel.start_consuming()
