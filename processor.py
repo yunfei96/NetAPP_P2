@@ -1,6 +1,7 @@
 import rmq_params as p
 import pika
 import argparse
+import pickle
 def parse():
     parser = argparse.ArgumentParser(description='Arguments for client.')
     parser.add_argument('-s', dest='server_ip',  help="server ip", type = str, action="store", default="192.168.0.101")
@@ -17,7 +18,8 @@ def connect_rbmq(server_ip):
     return channel
 
 def callback(ch, method, properties, body):
-    print(" [x] %r:%r" % (method.routing_key, body))
+    receipt = pickle.loads(body)
+    print(" %r:%r" % (method.routing_key, receipt))
 
 server_ip = parse()
 channel = connect_rbmq(server_ip)

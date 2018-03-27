@@ -49,9 +49,6 @@ order_ID = 0
 channel = connect_rbmq()
 #setup queue
 setup_q_e(channel)
-#-test-
-rbq_send(channel,"processor","hi")
-#-----
 #setup bt server
 server_sock=start_BTS()
 while 1:
@@ -92,6 +89,7 @@ while 1:
         print(time)
         receipt = pickle.dumps((order_ID,re,price,time))
         client_sock.send(receipt)
+        rbq_send(channel,"processor",receipt)
         print("[Checkpoint] Closed Bluetooth Connection.")
         client_sock.close()
     except IOError:
