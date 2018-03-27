@@ -33,8 +33,8 @@ def setup_q_e(channel):
 
 def setup_od_q(channel,order_ID):
     #----------declare order queue---------------------
-    channel.queue_declare(order_ID.str(), auto_delete=True)
-    channel.queue_bind(exchange= p.rmq_params["exchange"], queue=order_ID.str(), routing_key="client")
+    channel.queue_declare(str(order_ID), auto_delete=True)
+    channel.queue_bind(exchange= p.rmq_params["exchange"], queue=str(order_ID), routing_key="client")
 
 def start_BTS():
     #----------start a bluetooth server-------------------

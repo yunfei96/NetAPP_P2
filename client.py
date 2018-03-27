@@ -76,7 +76,7 @@ print("[Checkpoint] Closed Bluetooth Connection.")
 sock.close()
 #listen to status queue
 channel.basic_consume(callback,
-                      queue=receipt[0].str(),
+                      queue=str(receipt[0]),
                       no_ack=True)
 
 channel.start_consuming()
