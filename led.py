@@ -2,7 +2,7 @@
 # @Author: TheoLong
 # @Date:   2018-03-29 13:02:41
 # @Last Modified by:   TheoLong
-# @Last Modified time: 2018-03-29 13:40:48
+# @Last Modified time: 2018-03-29 14:07:14
 import RPi.GPIO as GPIO
 import rmq_params as p
 import pika
@@ -93,8 +93,17 @@ def callback(ch, method, properties, body):
     receipt = pickle.loads(body)
     print("[Checkpoint] Consuming from RMQ queue: led-Q")
     #flash LED
-
-    
+    status = pickle.loads(body)
+    if (status == 'c'):
+        connected()
+    if (status == 'd'):
+        disconnected()
+    if (status == 'sub'):
+        submitted()
+    if (status == 'st'):
+        started()
+    if (status == 'f'):
+        finished()   
 
 #================   main    =========================
 server_ip = parse()

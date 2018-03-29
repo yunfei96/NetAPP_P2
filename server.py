@@ -61,6 +61,9 @@ while 1:
     client_sock, client_info = server_sock.accept()
     print("[Checkpoint] Accepted connection from ", end='')
     print(client_info)
+    #====== connected status to LED
+    rbq_send(channel,"led",pickle.dumps('c'))
+    #====== end of LED
     try:
         #-------send menu-------
         raw_menu = menu.menu
@@ -99,8 +102,14 @@ while 1:
         rbq_send(channel,"client",pickle.dumps(1))
         #send to order queue
         rbq_send(channel,"processor",receipt)
+        #====== submitted status to LED
+        rbq_send(channel,"led",pickle.dumps('sub'))
+        #====== end of LED
         print("[Checkpoint] Closed Bluetooth Connection.")
         client_sock.close()
+        #====== disconnected status to LED
+        rbq_send(channel,"led",pickle.dumps('d'))
+        #====== end of LED
     except IOError:
             pass
     order_ID = order_ID + 1

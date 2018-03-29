@@ -29,9 +29,15 @@ def callback(ch, method, properties, body):
     #start order
     print("Starting order: %i" %receipt[0])
     rbq_send(ch,"client",pickle.dumps(2))
+    #====== started status to LED
+    rbq_send(channel,"led",pickle.dumps('st'))
+    #====== end of LED
     #finish order
     print("Completed order: %i" %receipt[0])
     rbq_send(ch,"client",pickle.dumps(3))
+    #====== finished status to LED
+    rbq_send(channel,"led",pickle.dumps('f'))
+    #====== end of LED
 
 server_ip = parse()
 channel = connect_rbmq(server_ip)
