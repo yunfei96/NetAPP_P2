@@ -2,26 +2,23 @@
 # @Author: TheoLong
 # @Date:   2018-03-29 13:02:41
 # @Last Modified by:   TheoLong
-# @Last Modified time: 2018-03-29 14:07:14
+# @Last Modified time: 2018-03-31 21:53:13
 import RPi.GPIO as GPIO
 import rmq_params as p
 import pika
 import argparse
 import pickle
 import time
-GPIO.setmode(GPIO.BOARD)
-#======== here to change pin number  =============
-RED = 22
-GREEN = 24
-BLUE = 26
-#=================  preperation  ===============
-chan_list = [RED,GREEN,BLUE]  # in the order of RGB
-GPIO.setup(chan_list, GPIO.OUT) # set to output
 def parse():
     parser = argparse.ArgumentParser(description='Arguments for LED.py.')
     parser.add_argument('-s', dest='server_ip',  help="server ip", type = str, action="store", default="192.168.0.101")
+    parser.add_argument('-m', dest='gpio_mode',  help="gpio mode", type = str, action="store", default=1)
+    parser.add_argument('-r', dest='RED',  help="red pin", type = str, action="store", default=22)
+    parser.add_argument('-g', dest='GREEN',  help="green pin", type = str, action="store", default=24)
+    parser.add_argument('-b', dest='BLUE',  help="blue pin", type = str, action="store", default=26)
+
     args = parser.parse_args()
-    return args.server_ip
+    return [args.server_ip, args.gpio_mode, args.RED, args.GREEN, args.BLUE]
 
 '''
 ==================  status led  ====================
@@ -92,7 +89,7 @@ def connect_rbmq(server_ip):
 
 def callback(ch, method, properties, body):
     receipt = pickle.loads(body)
-    print("[Checkpoint] Consuming from RMQ queue: led-Q")
+    
     #flash LED
     status = pickle.loads(body)
     if (status == 'c'):
@@ -107,8 +104,22 @@ def callback(ch, method, properties, body):
         finished(0.5)
 
 #================   main    =========================
-server_ip = parse()
+settings = parse()
+if settings[1] == 10:
+    GPIO.setmode(GPIO.BOARD)
+else if settings[1] == 11:
+    GPIO.setmode(GPIO.BCM)
+else:
+    exit('Error: invalid GPIO mode')
+#======== here to change pin number  =============
+RED = settings[2]
+GREEN = settings[3]
+BLUE = settings[4]
+#=================  preperation  ===============
+chan_list = [RED,GREEN,BLUE]  # in the order of RGB
+GPIO.setup(chan_list, GPIO.OUT) # set to output
 channel = connect_rbmq(server_ip)
+print("[Checkpoint] Consuming from RMQ queue: led-Q")
 channel.basic_consume(callback,
                       queue=p.rmq_params["led_queue"],
                       no_ack=True)
