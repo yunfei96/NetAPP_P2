@@ -33,6 +33,7 @@ def connect_rbmq(server_ip):
 
 def callback(ch, method, properties, body):
     input = pickle.loads(body)
+    global enter_time
     if enter_time == 0:
         print("[Checkpoint] Consuming from RMQ queue: %r" %method.routing_key)
         enter_time = 1
