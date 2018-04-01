@@ -13,9 +13,9 @@ def parse():
     parser = argparse.ArgumentParser(description='Arguments for LED.py.')
     parser.add_argument('-s', dest='server_ip',  help="server ip", type = str, action="store", default="192.168.0.101")
     parser.add_argument('-m', dest='gpio_mode',  help="gpio mode", type = str, action="store", default=10)
-    parser.add_argument('-r', dest='RED',  help="red pin", type = str, action="store", default=22)
-    parser.add_argument('-g', dest='GREEN',  help="green pin", type = str, action="store", default=24)
-    parser.add_argument('-b', dest='BLUE',  help="blue pin", type = str, action="store", default=26)
+    parser.add_argument('-r', dest='RED',  help="red pin", type = str, action="store", default=36)
+    parser.add_argument('-g', dest='GREEN',  help="green pin", type = str, action="store", default=38)
+    parser.add_argument('-b', dest='BLUE',  help="blue pin", type = str, action="store", default=40)
 
     args = parser.parse_args()
     return [args.server_ip, args.gpio_mode, args.RED, args.GREEN, args.BLUE]
