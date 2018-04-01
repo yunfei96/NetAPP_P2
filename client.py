@@ -44,7 +44,6 @@ def callback(ch, method, properties, body):
 
 #----------connect BT server-----------
 (server_addr,bd_addr) = parse()
-channel = connect_rbmq(server_addr)
 port = 1
 sock=BluetoothSocket( RFCOMM )
 sock.connect((bd_addr, port))
@@ -75,6 +74,7 @@ print(receipt[3])
 print("[Checkpoint] Closed Bluetooth Connection.")
 sock.close()
 #listen to status queue
+channel = connect_rbmq(server_addr)
 channel.basic_consume(callback,
                       queue=str(receipt[0]),
                       no_ack=True)
