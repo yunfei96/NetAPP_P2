@@ -4,6 +4,7 @@ import pickle
 import pika
 import sys
 import rmq_params as p
+enter_time =0
 def print_menu(menu):
     for food in menu:
         print (food, end='')
@@ -45,7 +46,7 @@ def callback(ch, method, properties, body):
 
 
 #----------connect BT server-----------
-enter_time =0;
+
 (server_addr,bd_addr) = parse()
 port = 1
 sock=BluetoothSocket( RFCOMM )
