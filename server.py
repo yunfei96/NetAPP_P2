@@ -110,7 +110,7 @@ while 1:
         #====== submitted status to LED
         rbq_send(channel,"led",pickle.dumps('sub'))
         #====== end of LED
-            except IOError:
+        except IOError:
             pass
     order_ID = order_ID + 1
 server_sock.close()
