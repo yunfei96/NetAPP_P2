@@ -8,13 +8,14 @@ import rmq_params as p
 import pika
 import argparse
 import pickle
+import time
 GPIO.setmode(GPIO.BOARD)
 #======== here to change pin number  =============
-RED = 24
-GREEN = 26
-BLUE = 28
+RED = 22
+GREEN = 24
+BLUE = 26
 #=================  preperation  ===============
-chan_list = [RED,2GREEN6,BLUE]  # in the order of RGB
+chan_list = [RED,GREEN,BLUE]  # in the order of RGB
 GPIO.setup(chan_list, GPIO.OUT) # set to output
 def parse():
     parser = argparse.ArgumentParser(description='Arguments for LED.py.')
@@ -56,20 +57,20 @@ def finished(duration):
 '''
 ==================  indivisual color  ====================
 '''
-def litRGB(R,G,B,Duration):
+def litRGB(R,G,B,duration):
     #clear previous color
     clearAllColor()
     onList = []
     if (R > 0):
         onList.append(RED)
     if (G > 0):
-        onlist.append(GREEN)
+        onList.append(GREEN)
     if (B > 0):
-        onlist.append(BLUE)
+        onList.append(BLUE)
 
     if (duration > 0): # unlimited time if duration = 0
         GPIO.output(onList, GPIO.HIGH) 
-        sleep(duration)
+        time.sleep(duration)
         clearAllColor()
     else:
         GPIO.output(onList, GPIO.HIGH) 
@@ -95,15 +96,15 @@ def callback(ch, method, properties, body):
     #flash LED
     status = pickle.loads(body)
     if (status == 'c'):
-        connected()
+        connected(0.5)
     if (status == 'd'):
-        disconnected()
+        disconnected(0.5)
     if (status == 'sub'):
-        submitted()
+        submitted(0.5)
     if (status == 'st'):
-        started()
+        started(0.5)
     if (status == 'f'):
-        finished()   
+        finished(0.5)
 
 #================   main    =========================
 server_ip = parse()
