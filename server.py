@@ -96,12 +96,12 @@ while 1:
         print("Total Time: ",end='')
         print(time)
         print("[Checkpoint] Closed Bluetooth Connection.")
+        receipt = pickle.dumps((order_ID,re,price,time))
+        client_sock.send(receipt)
         client_sock.close()
         #====== disconnected status to LED
         rbq_send(channel,"led",pickle.dumps('d'))
         #====== end of LED
-        receipt = pickle.dumps((order_ID,re,price,time))
-        client_sock.send(receipt)
         setup_od_q(channel, order_ID)
         #send to client status queue
         rbq_send(channel,"client",pickle.dumps(1))
