@@ -12,7 +12,7 @@ import time
 def parse():
     parser = argparse.ArgumentParser(description='Arguments for LED.py.')
     parser.add_argument('-s', dest='server_ip',  help="server ip", type = str, action="store", default="192.168.0.101")
-    parser.add_argument('-m', dest='gpio_mode',  help="gpio mode", type = str, action="store", default=1)
+    parser.add_argument('-m', dest='gpio_mode',  help="gpio mode", type = str, action="store", default=10)
     parser.add_argument('-r', dest='RED',  help="red pin", type = str, action="store", default=22)
     parser.add_argument('-g', dest='GREEN',  help="green pin", type = str, action="store", default=24)
     parser.add_argument('-b', dest='BLUE',  help="blue pin", type = str, action="store", default=26)
@@ -105,9 +105,10 @@ def callback(ch, method, properties, body):
 
 #================   main    =========================
 settings = parse()
+server_ip = settings[0]
 if settings[1] == 10:
     GPIO.setmode(GPIO.BOARD)
-else if settings[1] == 11:
+elif settings[1] == 11:
     GPIO.setmode(GPIO.BCM)
 else:
     exit('Error: invalid GPIO mode')
