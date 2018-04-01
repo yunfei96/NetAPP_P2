@@ -124,9 +124,6 @@ print("[Checkpoint] Consuming from RMQ queue: led-Q")
 channel.basic_consume(callback,
                       queue=p.rmq_params["led_queue"],
                       no_ack=True)
-try:
-    channel.start_consuming()
-except:
-    print("Error: Queue not found. Please restart server")
+channel.start_consuming()
 GPIO.cleanup()
 
