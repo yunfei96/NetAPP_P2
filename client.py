@@ -32,7 +32,9 @@ def connect_rbmq(server_ip):
 
 def callback(ch, method, properties, body):
     input = pickle.loads(body)
-    print("[Checkpoint] Consuming from RMQ queue: %r" %method.routing_key)
+    if enter_time == 0:
+        print("[Checkpoint] Consuming from RMQ queue: %r" %method.routing_key)
+        enter_time = 1
     if(input == 1):
         print("[Checkpoint] Order Update: Your order has been submitted.")
     elif(input == 2):
@@ -43,6 +45,7 @@ def callback(ch, method, properties, body):
 
 
 #----------connect BT server-----------
+enter_time =0;
 (server_addr,bd_addr) = parse()
 port = 1
 sock=BluetoothSocket( RFCOMM )

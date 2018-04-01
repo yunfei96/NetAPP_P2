@@ -120,7 +120,7 @@ BLUE = settings[4]
 chan_list = [RED,GREEN,BLUE]  # in the order of RGB
 GPIO.setup(chan_list, GPIO.OUT) # set to output
 channel = connect_rbmq(server_ip)
-print("[Checkpoint] Consuming from RMQ queue: led-Q")
+print("[Checkpoint] Consuming from RMQ queue: %s" %p.rmq_params["led_queue"])
 channel.basic_consume(callback,
                       queue=p.rmq_params["led_queue"],
                       no_ack=True)
