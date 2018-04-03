@@ -3,6 +3,7 @@ import pika
 import argparse
 import pickle
 import sys
+import time
 def parse():
     parser = argparse.ArgumentParser(description='Arguments for client.')
     parser.add_argument('-s', dest='server_ip',  help="server ip", type = str, action="store", default="192.168.0.101")
@@ -32,6 +33,7 @@ def callback(ch, method, properties, body):
     #====== started status to LED
     rbq_send(channel,"led",pickle.dumps('st'))
     #====== end of LED
+    time.sleep(5) #sleep 5 seconds to simulate the processing time
     #finish order
     print("Completed order: %i" %receipt[0])
     rbq_send(ch,"client",pickle.dumps(3))
